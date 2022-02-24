@@ -1,0 +1,25 @@
+--cpu Cortex-M3
+"st7735s\startup_stm32f103xb.o"
+"st7735s\main.o"
+"st7735s\gpio.o"
+"st7735s\stm32f1xx_it.o"
+"st7735s\stm32f1xx_hal_msp.o"
+"st7735s\stm32f1xx_hal_gpio_ex.o"
+"st7735s\stm32f1xx_hal_tim.o"
+"st7735s\stm32f1xx_hal_tim_ex.o"
+"st7735s\stm32f1xx_hal.o"
+"st7735s\stm32f1xx_hal_rcc.o"
+"st7735s\stm32f1xx_hal_rcc_ex.o"
+"st7735s\stm32f1xx_hal_gpio.o"
+"st7735s\stm32f1xx_hal_dma.o"
+"st7735s\stm32f1xx_hal_cortex.o"
+"st7735s\stm32f1xx_hal_pwr.o"
+"st7735s\stm32f1xx_hal_flash.o"
+"st7735s\stm32f1xx_hal_flash_ex.o"
+"st7735s\stm32f1xx_hal_exti.o"
+"st7735s\system_stm32f1xx.o"
+"st7735s\lcd.o"
+--strict --scatter "ST7735S\ST7735S.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "ST7735S.map" -o ST7735S\ST7735S.axf
