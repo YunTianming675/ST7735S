@@ -34,6 +34,46 @@ void LCD_WriteByte(uint8_t data, uint8_t mode)
 	LCD_CS_SET();
 }
 
+/*写入两个字节
+ *先写高字节，再写低字节
+**/
+void LCD_Write2Byte(uint16_t data, uint8_t mode)
+{
+	LCD_WriteByte(data >> 8, mode);
+	LCD_WriteByte(data, mode);
+}
+
+/*设置显示窗口大小
+ *
+**/
+void LCD_SetWindow(uint8_t sx, uint8_t sy, uint16_t width, uint16_t height)
+{
+	width = sx + width - 1;
+    height = sy + height - 1;
+    if(USE_HORIZONTAL == 0)
+    {
+
+        LCD_WriteByte(lcddev.setxcmd, LCD_CMD);
+        LCD_Write2Byte(sx + 2, LCD_DATA);    //设置 X方向起点
+        LCD_Write2Byte(width + 2, LCD_DATA); //设置 X方向终点
+
+        LCD_WriteByte(lcddev.setycmd, LCD_CMD);
+        LCD_Write2Byte(sy + 3, LCD_DATA);    //设置 Y方向起点
+        LCD_Write2Byte(height + 3, LCD_DATA); //设置 Y方向终点
+
+    }
+    else
+    {
+        LCD_WriteByte(lcddev.setxcmd, LCD_CMD);
+        LCD_Write2Byte(sx + 3, LCD_DATA);    //设置 X方向起点
+        LCD_Write2Byte(width + 3, LCD_DATA); //设置 X方向终点
+
+        LCD_WriteByte(lcddev.setycmd, LCD_CMD);
+        LCD_Write2Byte(sy + 2, LCD_DATA);    //设置 Y方向起点
+        LCD_Write2Byte(height + 2, LCD_DATA); //设置 Y方向终点
+    }
+}
+
 // 软复位
 void LCD_SoftRest()
 {
@@ -62,7 +102,80 @@ void LCD_DisplayDir(uint8_t dir)
 		// 设置扫描方向
 		LCD_WriteByte(0x36, LCD_CMD);
 		LCD_WriteByte(0xC8, LCD_DATA);
+		
+		USE_HORIZONTAL = 0;
 	}
+	else if(dir == 1)
+	{
+		lcddev.direction = 0;
+		lcddev.width = LCD_XWidth;
+		lcddev.height = LCD_YWidth;
+		lcddev.wramcmd = 0x2C;
+		lcddev.setxcmd = 0x2A;
+		lcddev.setycmd = 0x2B;
+		
+		// 设置扫描方向
+		LCD_WriteByte(0x36, LCD_CMD);
+		LCD_WriteByte(0x48, LCD_DATA);
+		
+		USE_HORIZONTAL = 0;
+	}
+	else if(dir == 2)
+	{
+		lcddev.direction = 1;
+		lcddev.width = LCD_YWidth;
+		lcddev.height = LCD_XWidth;
+		lcddev.wramcmd = 0x2C;
+		lcddev.setxcmd = 0x2A;
+		lcddev.setycmd = 0x2B;
+		
+		// 设置扫描方向
+		LCD_WriteByte(0x36, LCD_CMD);
+		LCD_WriteByte(0xA8, LCD_DATA);
+		
+		USE_HORIZONTAL = 1;
+	}
+	else if(dir == 3)
+	{
+		lcddev.direction = 1;
+		lcddev.width = LCD_YWidth;
+		lcddev.height = LCD_XWidth;
+		lcddev.wramcmd = 0x2C;
+		lcddev.setxcmd = 0x2A;
+		lcddev.setycmd = 0x2B;
+		
+		// 设置扫描方向
+		LCD_WriteByte(0x36, LCD_CMD);
+		LCD_WriteByte(0x68, LCD_DATA);
+		
+		USE_HORIZONTAL = 1;
+	}
+	// 这是默认处理
+	else
+	{
+		lcddev.direction = 0;
+		lcddev.width = LCD_XWidth;
+		lcddev.height = LCD_YWidth;
+		lcddev.wramcmd = 0x2C;
+		lcddev.setxcmd = 0x2A;
+		lcddev.setycmd = 0x2B;
+		
+		// 设置扫描方向
+		LCD_WriteByte(0x36, LCD_CMD);
+		LCD_WriteByte(0xC8, LCD_DATA);
+		
+		USE_HORIZONTAL = 0;
+	}
+	LCD_SetWindow(0, 0, lcddev.width, lcddev.height);
+}
+
+/*全屏清屏
+ *参数：
+ *	color：清屏的填充色
+**/
+void LCD_Clear(uint16_t color)
+{
+	
 }
 
 void LCD_Init()
@@ -179,4 +292,5 @@ void LCD_Init()
 	
 	// 开显示
 	LCD_WriteByte(0x29, LCD_CMD);
+	LCD_BLK_ON();
 }
